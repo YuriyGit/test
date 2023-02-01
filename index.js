@@ -20,12 +20,11 @@ class Book {
 }
 
 async function getBookList() {
-    await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
         fs.readdir(path.join(__dirname, 'books'), (err, books) => {
             if (err) reject(err)
             console.log("books: ", books)//         !!!!!!!!!!
             resolve(books)//                        !!!!!!!!!!
-            return books//                          !!!!!!!!!!
         })
     })
 }
@@ -37,9 +36,8 @@ app.post('/api/user/login', (req, res) => {
         .send({id: 1, mail: "test@mail.ru"})
 })
 
-app.get('/api/books', (req, res) => {
-
-    res.send(getBookList())
+app.get('/api/books', async (req, res) => {
+    res.send(await getBookList())
 })
 
 app.post('/api/books', (req, res) => {
