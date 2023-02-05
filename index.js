@@ -1,13 +1,10 @@
 const express = require('express')
-const path = require('path')
-const fs = require('fs')
+const app = express()
 const {v4: uuid} = require('uuid')
 const PORT = process.env.PORT || 3000
-const app = express()
 
 class Book {
     constructor(id = uuid(), title = 'string', authors = 'string', favorite = 'string', fileCover = 'string', fileName = 'string') {
-
         {
             this.id = id
             this.title = title
@@ -19,16 +16,10 @@ class Book {
     }
 }
 
-async function getBookList() {
-    return await new Promise((resolve, reject) => {
-        fs.readdir(path.join(__dirname, 'books'), (err, books) => {
-            if (err) reject(err)
-            console.log("books: ", books)//         !!!!!!!!!!
-            resolve(books)//                        !!!!!!!!!!
-        })
-    })
+const store = {
+    books: []
 }
-
+app.use(express.json())
 
 app.post('/api/user/login', (req, res) => {
     res
@@ -36,27 +27,69 @@ app.post('/api/user/login', (req, res) => {
         .send({id: 1, mail: "test@mail.ru"})
 })
 
-app.get('/api/books', async (req, res) => {
-    res.send(await getBookList())
+app.post('/api/books', (req, res) => {
+    const book = new Book()
+    const {books} = store
+    books.push(book)
+    res
+        .status(201)
+        .send(book)
 })
 
-app.post('/api/books', (req, res) => {
-    // res.send('создаём книгу и возвращаем её же вместе с присвоенным ID')
-    const book = new Book()
-    res.send(`Book ${book}\n book id: ${book.id}`)
+app.get('/api/books', (req, res) => {
+    const {books} = store
+    res.send(books)
 })
 
 app.get('/api/books/:id', (req, res) => {
-    res.send('получить книгу по ID \n получаем объект книги, если запись не найдена, вернём Code: 404')
-
+    const {id} = req.params
+    const {books} = store
+    const bookID = books.findIndex(book => book.id === id)
+    if (bookID !== -1) {
+        res.send(books[bookID])
+    } else {
+        res
+            .status(404)
+            .send('Книга не найдена')
+    }
 })
 
 app.put('/api/books/:id', (req, res) => {
-    res.send('редактировать книгу по ID\n редактируем объект книги, если запись не найдена, вернём Code: 404')
+    const {books} = store
+    const {title, authors, favorite, fileCover, fileName} = req.body
+    const {id} = req.params
+    const bookID = books.findIndex(book => book.id === id)
+    if (bookID !== -1) {
+        books[bookID] = {
+            ...books[bookID],
+            title,
+            authors,
+            favorite,
+            fileCover,
+            fileName,
+        }
+        res.send(books[bookID])
+    } else {
+        res
+            .status(404)
+            .send('Книга не найдена')
+    }
+
+
 })
 
 app.delete('/api/books/:id', (req, res) => {
-    res.send('удалить книгу по ID \n удаляем книгу и возвращаем ответ: \'ok\'')
+    const {books} = store
+    const {id} = req.params
+    const bookID = books.findIndex(book => book.id === id)
+    if (bookID !== id) {
+        books.splice(bookID, 1)
+        res.send('Ok')
+    } else {
+        res
+            .status(404)
+            .send('книга не найдена')
+    }
 })
 
 app.listen(PORT, (err) => {
