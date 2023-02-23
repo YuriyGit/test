@@ -21,7 +21,7 @@ class Book {
 
 const store = {
     books: []
-};
+}
 
 router.post('/api/user/login', (req, res) => {
     res
@@ -31,13 +31,11 @@ router.post('/api/user/login', (req, res) => {
 
 router.post('/api/create',
     fileMulter.single('book'),
-    (req, res) => {
-        const {title, description, authors} = req.body;
+    async (req, res) => {
+        const {title, description, authors} = await req.params
         const book = new Book(title, description, authors)
         const {books} = store
         books.push(book)
-        console.log(book)                        //!!!!del
-        console.log ('req.body: ', req.body)    //!!!!del
         res
             .status(201)
             .redirect('/api/books')
@@ -74,13 +72,19 @@ router.get('/api/books/:id', (req, res) => {
             .json({errorCode: 404, errorMsg: 'not found'})
     }
 })
-
-router.put('/api/books/:id',
+router.get('/api/update/:id', (req, res) => {
+    res.render('books/update', {
+        title: "Новая книга",
+        description: "Описание книги",
+        author: "Автор книги",
+    })
+})
+router.post('/api/update/:id',
     fileMulter.single('book'),
     (req, res) => {
         const {books} = store
-        const {title, description, authors, favorite, fileCover, fileName, fileBook} = req.body
         const {id} = req.params
+        const {title, description, authors, favorite, fileCover, fileName, fileBook} = req.body
         const bookID = books.findIndex(book => book.id === id)
         if (bookID !== -1) {
             books[bookID] = {
@@ -93,7 +97,7 @@ router.put('/api/books/:id',
                 fileName,
                 fileBook,
             }
-            res.json(books[bookID])
+            res.redirect(`/api/books/${id}`)
         } else {
             res
                 .status(404)
