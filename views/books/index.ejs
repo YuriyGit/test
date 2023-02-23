@@ -1,0 +1,15 @@
+<%- include('../layout/index')%>
+
+<h1><%= title %></h1>
+<% if(books.length) { %>
+    <ul>
+        <% books.map(book => { %>
+            <li> <%= book.title %>  <a class="desc"  href="/api/books/<%= book.id %>">Подробно</a></li>
+        <% }) %>
+    </ul>
+<% } else { %>
+    <h2>Книг нет</h2>
+<% } %>
+
+</body>
+</html>
