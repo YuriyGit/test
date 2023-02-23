@@ -5,7 +5,7 @@ const fileMulter = require('../middlewear/file')
 const path = require('path')
 
 class Book {
-    constructor(id = uuid(), title = 'string', description = 'string', authors = 'string', favorite = true, fileCover = 'string', fileName = 'string', fileBook = "string") {
+    constructor( title = 'string', description = 'string', authors = 'string', favorite = true, fileCover = 'string', fileName = 'string', fileBook = "string",id = uuid()) {
         {
             this.id = id
             this.title = title
@@ -31,8 +31,8 @@ router.post('/api/user/login', (req, res) => {
 
 router.post('/api/create',
     fileMulter.single('book'),
-    async (req, res) => {
-        const {title, description, authors} = await req.params
+    (req, res) => {
+        const {title, description, authors} = req.body
         const book = new Book(title, description, authors)
         const {books} = store
         books.push(book)
@@ -72,6 +72,7 @@ router.get('/api/books/:id', (req, res) => {
             .json({errorCode: 404, errorMsg: 'not found'})
     }
 })
+
 router.get('/api/update/:id', (req, res) => {
     res.render('books/update', {
         title: "Новая книга",
@@ -79,6 +80,7 @@ router.get('/api/update/:id', (req, res) => {
         author: "Автор книги",
     })
 })
+
 router.post('/api/update/:id',
     fileMulter.single('book'),
     (req, res) => {

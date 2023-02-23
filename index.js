@@ -2,7 +2,9 @@ const express = require('express')
 const app = express()
 
 const indexRouter = require('./routes/index')
-app.set('view engine', 'ejs')
+
+app.use(express.urlencoded());
+app.set("view engine", "ejs");
 
 app.use(express.json())
 
