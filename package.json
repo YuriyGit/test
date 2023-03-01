@@ -1,9 +1,10 @@
 {
   "name": "test",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app/index.js",
   "scripts": {
-    "mon": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon -L"
   },
   "keywords": [],
   "author": "",
