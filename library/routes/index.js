@@ -10,10 +10,10 @@ function incr(bookID) {
         {method: 'post'})
 }
 
- function dataBase(bookID) {
+function dataBase(bookID) {
     const url = `http://counter:3001/counter/${bookID}`
 
-     http.get(url, (res) => {
+    http.get(url, (res) => {
         let data = ''
 
         res
@@ -21,7 +21,7 @@ function incr(bookID) {
             .on('end', () => {
                 let parseData = JSON.parse(data);
                 const {books} = store;
-                const bookIndex  = books.findIndex(book => book.id === bookID)
+                const bookIndex = books.findIndex(book => book.id === bookID)
                 books[bookIndex].views = parseData.cnt
             })
     }).on('error', (err) => {
@@ -109,29 +109,28 @@ router.get('/api/books', (req, res) => {
 router.get('/api/books/:id', (req, res) => {
     const {id} = req.params
     const {books} = store
-    const bookID = books.findIndex(book => book.id === id)
+    const bookIndex = books.findIndex(book => book.id === id)
 
-    if (bookID === -1) {
+    if (bookIndex === -1) {
         res.redirect('/404')
     }
 
-    dataBase(books[bookID].id)
+    dataBase(books[bookIndex].id)
 
-    console.log('books[bookID].views: ', books[bookID].views, __filename)
     res.render('books/view', {
-        title: books[bookID].title,
-        description: books[bookID].description,
-        view: books[bookID].views,
+        title: books[bookIndex].title,
+        description: books[bookIndex].description,
+        view: books[bookIndex].views,
     })
-    incr(books[bookID].id)
+    incr(books[bookIndex].id)
 })
 
 router.get('/api/update/:id', (req, res) => {
     const {books} = store
     const {id} = req.params
-    const bookID = books.findIndex(book => book.id === id)
+    const bookIndex = books.findIndex(book => book.id === id)
 
-    if (bookID === -1) {
+    if (bookIndex === -1) {
         res.redirect('/404')
     }
 
@@ -148,14 +147,14 @@ router.post('/api/update/:id',
         const {books} = store
         const {id} = req.params
         const {title, description, authors, favorite, fileCover, fileName, fileBook} = req.body
-        const bookID = books.findIndex(book => book.id === id)
+        const bookIndex = books.findIndex(book => book.id === id)
 
-        if (bookID === -1) {
+        if (bookIndex === -1) {
             res.redirect('/404')
         }
 
-        books[bookID] = {
-            ...books[bookID],
+        books[bookIndex] = {
+            ...books[bookIndex],
             title,
             description,
             authors,
@@ -171,11 +170,11 @@ router.post('/api/update/:id',
 router.delete('/api/books/:id', (req, res) => {
     const {books} = store
     const {id} = req.params
-    const bookID = books.findIndex(book => book.id === id)
-    if (bookID === -1) {
+    const bookIndex = books.findIndex(book => book.id === id)
+    if (bookIndex === -1) {
         res.redirect('/404')
     }
-    books.splice(bookID, 1)
+    books.splice(bookIndex, 1)
     res.redirect('/api/books')
 
 })
@@ -183,9 +182,9 @@ router.delete('/api/books/:id', (req, res) => {
 router.get('/api/books/:id/download', (req, res) => {
     const {id} = req.params
     const {books} = store
-    const bookID = books.findIndex(book => book.id === id)
-    if (bookID !== -1) {
-        const {fileName} = books[bookID]
+    const bookIndex = books.findIndex(book => book.id === id)
+    if (bookIndex !== -1) {
+        const {fileName} = books[bookIndex]
         res.download(path.join(__dirname, 'books', fileName), fileName)
     } else {
         res

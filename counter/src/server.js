@@ -14,7 +14,7 @@ app.get('/counter/:bookID', async (req, res) => {
     const {bookID} = req.params
 
     try {
-        const cnt = await client.incr(bookID)
+        const cnt = await client.get(bookID)
         res.json({cnt})
     } catch (e) {
         console.log(`=== redis error  === \n ${e}`)

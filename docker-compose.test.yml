@@ -8,7 +8,7 @@ services:
       - 80:3000
 
   counter:
-    build: ./counter #указать путь до Dockerfile
+    build: ./counter
     environment:
       - PORT=3001
       - REDIS_URL=redis://storage
