@@ -10,12 +10,11 @@ function incr(bookID) {
         {method: 'post'})
 }
 
-function dataBase(bookID) {
+async function dataBase(bookID) {
     const url = `http://counter:3001/counter/${bookID}`
 
-    http.get(url, (res) => {
+    await http.get(url, (res) => {
         let data = ''
-
         res
             .on('data', (chunk) => data += chunk)
             .on('end', () => {
@@ -23,7 +22,10 @@ function dataBase(bookID) {
                 const {books} = store;
                 const bookIndex = books.findIndex(book => book.id === bookID)
                 books[bookIndex].views = parseData.cnt
+
+                console.log("function dataBase: books[bookIndex].views: ", books[bookIndex].views, __filename, '\n //////') //del
             })
+
     }).on('error', (err) => {
         console.error(err)
     })
@@ -55,7 +57,7 @@ const store = {
         fileCover: "test.1",
         fileName: "test.1",
         fileBook: "test.1",
-        views: 0
+        views: 0,
     },
         {
             id: '2',
@@ -66,7 +68,7 @@ const store = {
             fileCover: "test.2",
             fileName: "test.2",
             fileBook: "test.2",
-            views: 0
+            views: 0,
         },
     ]
 }
@@ -106,24 +108,25 @@ router.get('/api/books', (req, res) => {
     })
 })
 
-router.get('/api/books/:id', (req, res) => {
-    const {id} = req.params
-    const {books} = store
-    const bookIndex = books.findIndex(book => book.id === id)
+router.get('/api/books/:id',    (req, res) => {
+        const {id} = req.params
+        const {books} = store
+        const bookIndex = books.findIndex(book => book.id === id)
 
-    if (bookIndex === -1) {
-        res.redirect('/404')
-    }
+        if (bookIndex === -1) {
+            res.redirect('/404')
+        }
 
-    dataBase(books[bookIndex].id)
+        dataBase(books[bookIndex].id)
+        console.log("/api/books/:id, dataBase: books[bookIndex].views:", books[bookIndex].views, __filename) //del
+        res.render('books/view', {
+            title: books[bookIndex].title,
+            description: books[bookIndex].description,
+            view: books[bookIndex].views,
+        })
 
-    res.render('books/view', {
-        title: books[bookIndex].title,
-        description: books[bookIndex].description,
-        view: books[bookIndex].views,
+        incr(books[bookIndex].id)
     })
-    incr(books[bookIndex].id)
-})
 
 router.get('/api/update/:id', (req, res) => {
     const {books} = store

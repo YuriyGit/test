@@ -16,6 +16,8 @@ app.get('/counter/:bookID', async (req, res) => {
     try {
         const cnt = await client.get(bookID)
         res.json({cnt})
+        console.log("cnt:", cnt, ' get', __filename)      //del
+
     } catch (e) {
         console.log(`=== redis error  === \n ${e}`)
         res.json({errcode: 500, errmsg: 'redis error!'})
@@ -27,6 +29,8 @@ app.post('/counter/:bookID/incr', async (req, res) => {
 
     try {
         const cnt = await client.incr(bookID)
+        console.log("cnt:", cnt, ' post', __filename)      //del
+
         res.json({cnt})
     } catch (e) {
         console.log(`=== redis error  === \n ${e}`)
