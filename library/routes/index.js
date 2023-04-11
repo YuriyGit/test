@@ -1,38 +1,38 @@
-const express = require('express')
-const {v4: uuid} = require("uuid");
+const express = require( 'express' )
+const { v4: uuid } = require( "uuid" );
 const router = express.Router()
-const fileMulter = require('../middleware/file')
-const path = require('path')
-const http = require('http')
+const fileMulter = require( '../middleware/file' )
+const path = require( 'path' )
+const http = require( 'http' )
 
-function incr(bookID) {
-    fetch(`http://counter:3001/counter/${bookID}/incr`,
-        {method: 'post'})
+function incr( bookID ) {
+    fetch( `http://counter:3001/counter/${bookID}/incr`,
+        { method: 'post' } )
 }
 
-async function dataBase(bookID) {
+async function dataBase( bookID ) {
     const url = `http://counter:3001/counter/${bookID}`
 
-    await http.get(url, (res) => {
+    await http.get( url, ( res ) => {
         let data = ''
         res
-            .on('data', (chunk) => data += chunk)
-            .on('end', () => {
-                let parseData = JSON.parse(data);
-                const {books} = store;
-                const bookIndex = books.findIndex(book => book.id === bookID)
-                books[bookIndex].views = parseData.cnt
+            .on( 'data', ( chunk ) => data += chunk )
+            .on( 'end', () => {
+                let parseData = JSON.parse( data );
+                const { books } = store;
+                const bookIndex = books.findIndex( book => book.id === bookID )
+                books[ bookIndex ].views = parseData.cnt
 
-                console.log("function dataBase: books[bookIndex].views: ", books[bookIndex].views, __filename, '\n //////') //del
-            })
+                console.log( "function dataBase: books[bookIndex].views: ", books[ bookIndex ].views, __filename, '\n //////' ) //del
+            } )
 
-    }).on('error', (err) => {
-        console.error(err)
-    })
+    } ).on( 'error', ( err ) => {
+        console.error( err )
+    } )
 }
 
 class Book {
-    constructor(title = 'string', description = 'string', authors = 'string', favorite = true, fileCover = 'string', fileName = 'string', fileBook = "string", views = 0, id = uuid()) {
+    constructor( title = 'string', description = 'string', authors = 'string', favorite = true, fileCover = 'string', fileName = 'string', fileBook = "string", views = 0, id = uuid() ) {
         {
             this.id = id
             this.title = title
@@ -48,7 +48,7 @@ class Book {
 }
 
 const store = {
-    books: [{
+    books: [ {
         id: '1',
         title: "test.1",
         description: "test.1",
@@ -73,91 +73,99 @@ const store = {
     ]
 }
 
-router.post('/api/user/login', (req, res) => {
+router.post( '/api/user/login', ( req, res ) => {
     res
-        .status(201)
-        .json({id: 1, mail: "test@mail.ru"})
-})
+        .status( 201 )
+        .json( { id: 1, mail: "test@mail.ru" } )
+} )
 
-router.post('/api/create',
-    fileMulter.single('book'),
-    (req, res) => {
-        const {title, description, authors} = req.body
-        const book = new Book(title, description, authors)
-        const {books} = store
-        books.push(book)
+router.post( '/api/create',
+    fileMulter.single( 'book' ),
+    ( req, res ) => {
+        const { title, description, authors } = req.body
+        const book = new Book( title, description, authors )
+        const { books } = store
+        books.push( book )
 
         res
-            .status(201)
-            .redirect('/api/books')
-    })
+            .status( 201 )
+            .redirect( '/api/books' )
+    } )
 
-router.get('/api/create', (req, res) => {
-    res.render("books/create", {
+router.get( '/api/create', ( req, res ) => {
+    res.render( "books/create", {
         title: "Новая книга",
         description: "Описание книги",
         author: "Автор книги",
-    });
-});
+    } );
+} );
 
-router.get('/api/books', (req, res) => {
-    const {books} = store
-    res.render('books/index', {
+router.get( '/api/books', ( req, res ) => {
+    const { books } = store
+    res.render( 'books/index', {
         title: "Главная страница",
         books: books,
-    })
-})
+    } )
+} )
 
-router.get('/api/books/:id',    (req, res) => {
-        const {id} = req.params
-        const {books} = store
-        const bookIndex = books.findIndex(book => book.id === id)
+router.get( '/api/books/:id', ( req, res ) => {
+    const { id } = req.params
+    const { books } = store
+    const bookIndex = books.findIndex( book => book.id === id )
 
-        if (bookIndex === -1) {
-            res.redirect('/404')
-        }
-
-        dataBase(books[bookIndex].id)
-        console.log("/api/books/:id, dataBase: books[bookIndex].views:", books[bookIndex].views, __filename) //del
-        res.render('books/view', {
-            title: books[bookIndex].title,
-            description: books[bookIndex].description,
-            view: books[bookIndex].views,
-        })
-
-        incr(books[bookIndex].id)
-    })
-
-router.get('/api/update/:id', (req, res) => {
-    const {books} = store
-    const {id} = req.params
-    const bookIndex = books.findIndex(book => book.id === id)
-
-    if (bookIndex === -1) {
-        res.redirect('/404')
+    if ( bookIndex === -1 ) {
+        res.redirect( '/404' )
     }
 
-    res.render('books/update', {
+    dataBase( books[ bookIndex ].id )
+    console.log( "/api/books/:id, dataBase: books[bookIndex].views:", books[ bookIndex ].views, __filename ) //del
+    res.render( 'books/view', {
+        title: books[ bookIndex ].title,
+        description: books[ bookIndex ].description,
+        view: books[ bookIndex ].views,
+    } )
+
+    incr( books[ bookIndex ].id )
+} )
+
+router.get( '/api/update/:id', ( req, res ) => {
+    const { books } = store
+    const { id } = req.params
+    const bookIndex = books.findIndex( book => book.id === id )
+
+    if ( bookIndex === -1 ) {
+        res.redirect( '/404' )
+    }
+
+    res.render( 'books/update', {
         title: "Новая книга",
         description: "Описание книги",
         author: "Автор книги",
-    })
-})
+    } )
+} )
 
-router.post('/api/update/:id',
-    fileMulter.single('book'),
-    (req, res) => {
-        const {books} = store
-        const {id} = req.params
-        const {title, description, authors, favorite, fileCover, fileName, fileBook} = req.body
-        const bookIndex = books.findIndex(book => book.id === id)
+router.post( '/api/update/:id',
+    fileMulter.single( 'book' ),
+    ( req, res ) => {
+        const { books } = store
+        const { id } = req.params
+        const {
+            title,
+            description,
+            authors,
+            favorite,
+            fileCover,
+            fileName,
+            fileBook
+        } = req.body
+        const bookIndex = books.findIndex( book => book.id === id )
 
-        if (bookIndex === -1) {
-            res.redirect('/404')
+        if ( bookIndex === -1 ) {
+            res.redirect( '/404' )
         }
 
-        books[bookIndex] = {
-            ...books[bookIndex],
+        books[ bookIndex ] = {
+            ...books[ bookIndex ],
             title,
             description,
             authors,
@@ -166,34 +174,34 @@ router.post('/api/update/:id',
             fileName,
             fileBook,
         }
-        res.redirect(`/api/books/${id}`)
+        res.redirect( `/api/books/${id}` )
 
-    })
+    } )
 
-router.delete('/api/books/:id', (req, res) => {
-    const {books} = store
-    const {id} = req.params
-    const bookIndex = books.findIndex(book => book.id === id)
-    if (bookIndex === -1) {
-        res.redirect('/404')
+router.delete( '/api/books/:id', ( req, res ) => {
+    const { books } = store
+    const { id } = req.params
+    const bookIndex = books.findIndex( book => book.id === id )
+    if ( bookIndex === -1 ) {
+        res.redirect( '/404' )
     }
-    books.splice(bookIndex, 1)
-    res.redirect('/api/books')
+    books.splice( bookIndex, 1 )
+    res.redirect( '/api/books' )
 
-})
+} )
 
-router.get('/api/books/:id/download', (req, res) => {
-    const {id} = req.params
-    const {books} = store
-    const bookIndex = books.findIndex(book => book.id === id)
-    if (bookIndex !== -1) {
-        const {fileName} = books[bookIndex]
-        res.download(path.join(__dirname, 'books', fileName), fileName)
+router.get( '/api/books/:id/download', ( req, res ) => {
+    const { id } = req.params
+    const { books } = store
+    const bookIndex = books.findIndex( book => book.id === id )
+    if ( bookIndex !== -1 ) {
+        const { fileName } = books[ bookIndex ]
+        res.download( path.join( __dirname, 'books', fileName ), fileName )
     } else {
         res
-            .status(404)
-            .json({errorCode: 404, errorMsg: 'not found'})
+            .status( 404 )
+            .json( { errorCode: 404, errorMsg: 'not found' } )
     }
-})
+} )
 
 module.exports = router
