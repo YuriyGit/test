@@ -22,8 +22,6 @@ async function dataBase( bookID ) {
                 const { books } = store;
                 const bookIndex = books.findIndex( book => book.id === bookID )
                 books[ bookIndex ].views = parseData.cnt
-
-                console.log( "function dataBase: books[bookIndex].views: ", books[ bookIndex ].views, __filename, '\n //////' ) //del
             } )
 
     } ).on( 'error', ( err ) => {
@@ -118,7 +116,6 @@ router.get( '/api/books/:id', ( req, res ) => {
     }
 
     dataBase( books[ bookIndex ].id )
-    console.log( "/api/books/:id, dataBase: books[bookIndex].views:", books[ bookIndex ].views, __filename ) //del
     res.render( 'books/view', {
         title: books[ bookIndex ].title,
         description: books[ bookIndex ].description,
