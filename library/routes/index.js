@@ -6,28 +6,30 @@ const path = require('path')
 const http = require('http')
 
 function incr(bookID) {
-    fetch(`http://counter:3001/counter/${bookID}/incr`,
+    return fetch(`http://counter:3001/counter/${bookID}/incr`,
         {method: 'post'})
 }
 
-async function dataBase(bookID) {
+function dataBase(bookID) {
     const url = `http://counter:3001/counter/${bookID}`
 
-    await http.get(url, (res) => {
-        let data = ''
-        res
-            .on('data', (chunk) => data += chunk)
-            .on('end', () => {
-                let parseData = JSON.parse(data);
-                const {books} = store;
-                const bookIndex = books.findIndex(book => book.id === bookID)
-                books[bookIndex].views = parseData.cnt
+    return new Promise( ( resolve, reject ) => {
+        http.get( url, ( res ) => {
+            let data = ''
+            res
+                .on( 'data', ( chunk ) => data += chunk )
+                .on( 'end', () => {
+                    let parseData = JSON.parse( data );
+                    const { books } = store;
+                    const bookIndex = books.findIndex( book => book.id === bookID )
+                    books[ bookIndex ].views = parseData.cnt
+                    resolve()
+                } )
 
-                console.log("function dataBase: books[bookIndex].views: ", books[bookIndex].views, __filename, '\n //////') //del
-            })
-
-    }).on('error', (err) => {
-        console.error(err)
+        }).on('error', (err) => {
+            console.error(err)
+            reject()
+        })
     })
 }
 
@@ -108,7 +110,7 @@ router.get('/api/books', (req, res) => {
     })
 })
 
-router.get('/api/books/:id',    (req, res) => {
+router.get('/api/books/:id',   async (req, res) => {
         const {id} = req.params
         const {books} = store
         const bookIndex = books.findIndex(book => book.id === id)
@@ -117,7 +119,9 @@ router.get('/api/books/:id',    (req, res) => {
             res.redirect('/404')
         }
 
-        dataBase(books[bookIndex].id)
+        await incr( books[ bookIndex ].id )
+        await dataBase(books[bookIndex].id)
+
         console.log("/api/books/:id, dataBase: books[bookIndex].views:", books[bookIndex].views, __filename) //del
         res.render('books/view', {
             title: books[bookIndex].title,
@@ -125,8 +129,7 @@ router.get('/api/books/:id',    (req, res) => {
             view: books[bookIndex].views,
         })
 
-        incr(books[bookIndex].id)
-    })
+} )
 
 router.get('/api/update/:id', (req, res) => {
     const {books} = store
