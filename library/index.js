@@ -17,7 +17,7 @@ app.use(errorMiddleware)
 
 async function start(PORT, URLDB) {
     try {
-        await mongoose.connect(URLDB)
+        await mongoose.connect(URLDB,{ useNewUrlParser: true, useUnifiedTopology: true })
             .then(() => console.log('MongoDB connected...'))
         app.listen(PORT, (err) => {
             if (err) console.log(err)
@@ -29,6 +29,6 @@ async function start(PORT, URLDB) {
 }
 
 const PORT = process.env.PORT || 3000
-const URLDB = process.env.URLDB
+const URLDB = process.env.URLDB || 'mongodb+srv://user:o6CImunWCpPn8UEq@books.qcacsz4.mongodb.net/?retryWrites=true&w=majority'
 
 start(PORT, URLDB)

@@ -6,12 +6,18 @@
     <ul>
 
         <% books.map(book => { %>
-        <li>
-            <%= book.title %>
-            <a class = "btn" href = "/api/books/<%= book._id %>">Подробно</a>
-            <a class = "btn" href = "/api/update/<%= book._id %>">Исправить</a>
-        </li>
-            <% }) %>
+            <li>
+                <%= book.title %>
+                <a class = "btn" href = "/api/books/<%= book._id %>">Подробно</a>
+                <a class = "btn" href = "/api/update/<%= book._id %>">Исправить</a>
+<!--                <a class = "btn btn-danger" href = "/api/books/delete/<%= book._id %>">Удалить</a>-->
+                <form action="/api/book/<%= book._id %>" method="POST" class="d-inline">
+                    <button class="btn  btn-danger">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </form>
+            </li>
+        <% }) %>
 
     </ul>
 <% } else { %>

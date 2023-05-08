@@ -6,20 +6,6 @@ services:
       - PORT=3000
     ports:
       - 80:3000
-
-  counter:
-    build: ./counter
-    environment:
-      - PORT=3001
-      - REDIS_URL=redis://storage
-    ports:
-      - 81:3001
-    depends_on:
-      - storage
-  storage:
-    image: redis
-    volumes:
-      - ./data:/data
   mongo:
     image: mongo
     restart: always
