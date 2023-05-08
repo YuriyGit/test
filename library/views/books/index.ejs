@@ -1,15 +1,18 @@
 <!-- просмотр списка всех книг (вывод заголовков)-->
-<%- include('../layout/index')%>
+<%- include('../layout/index') %>
 
 <h1><%= title %></h1>
 <% if(books.length) { %>
     <ul>
+
         <% books.map(book => { %>
-            <li> <%= book.title %>
-                <a class="btn"  href="/api/books/<%= book.id %>">Подробно</a>
-                <a class="btn"  href ="/api/update/<%= book.id %>">Исправить</a>
-            </li>
-        <% }) %>
+        <li>
+            <%= book.title %>
+            <a class = "btn" href = "/api/books/<%= book._id %>">Подробно</a>
+            <a class = "btn" href = "/api/update/<%= book._id %>">Исправить</a>
+        </li>
+            <% }) %>
+
     </ul>
 <% } else { %>
     <h2>Книг нет</h2>
