@@ -1,0 +1,28 @@
+body {
+    box-sizing: border-box;
+    background-color: black;
+}
+
+.wrapper {
+    font-size: 5vh;
+    margin: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #d94f4f;
+}
+
+.date {
+
+   display: flex;
+    justify-content: center;
+
+    margin-right: 10%;
+    padding: 10px;
+}
+.date div{
+    margin-right: 10%;
+    align-self: center;
+}
+
