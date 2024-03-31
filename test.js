@@ -11,20 +11,13 @@ const timer = setInterval(() => {
     const newYear = new Date('2025-01-01 00:00:00');
     const timer = newYear - dateNow;
 
-    const months = new Intl.DateTimeFormat('ru-RU',{month: "numeric"} ).format(timer)
-    const days = new Intl.DateTimeFormat('ru-RU', {day: "numeric"}).format(timer)
-    const hours = new Intl.DateTimeFormat('ru-RU', {hour: "numeric"}).format(timer)
-    const minutes = new Intl.DateTimeFormat('ru-RU', {minute: "numeric"}).format(timer)
-    const seconds = new Intl.DateTimeFormat('ru-RU', {second: "numeric"}).format(timer)
-
-
-    month.innerHTML = months;
-    day.innerHTML = days;
-    hour.innerHTML = hours;
-    minute.innerHTML = minutes;
-    second.innerHTML = seconds;
+    month.innerHTML = Math.floor(timer / 1000 / 60 / 60 / 24 / 30);
+    day.innerHTML = Math.floor(timer / 1000 / 60 / 60 / 24) % 30;
+    hour.innerHTML = Math.floor((timer / 1000 / 60 / 60) % 24);
+    minute.innerHTML = Math.floor((timer / 1000 / 60) % 60);
+    second.innerHTML = Math.floor((timer / 1000) % 60);
 }, 1000)
 
 setTimeout(() => {
     clearInterval(timer)
-}, 5000)
+}, 1000)
